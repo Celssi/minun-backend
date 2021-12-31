@@ -14,6 +14,9 @@ export class Education {
   @Column({length: 300})
   educationPlace: string;
 
+  @Column({length: 300})
+  period: string;
+
   @Column({length: 1000})
   description: string;
 
@@ -38,6 +41,11 @@ export class CreateEducationDto {
   @IsNotEmpty()
   @MaxLength(300)
   educationPlace: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(300)
+  period: string;
 
   @IsString()
   @IsNotEmpty()

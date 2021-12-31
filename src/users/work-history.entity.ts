@@ -14,6 +14,9 @@ export class WorkHistory {
   @Column({length: 300})
   workplace: string;
 
+  @Column({length: 300})
+  period: string;
+
   @Column({length: 1000})
   description: string;
 
@@ -38,6 +41,11 @@ export class CreateWorkHistoryDto {
   @IsNotEmpty()
   @MaxLength(300)
   workplace: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(300)
+  period: string;
 
   @IsString()
   @IsNotEmpty()
