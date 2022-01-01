@@ -9,6 +9,8 @@ import {Education} from './education.entity';
 
 @Controller('api/users')
 export class UsersController {
+  notAllowedHandles = ['etusivu', 'kirjaudu', 'tutustu', 'logout', 'etsi'];
+
   constructor(
     private readonly usersService: UsersService,
   ) {
@@ -50,7 +52,7 @@ export class UsersController {
     user.theme = updateUserDto.theme;
     user.languages = updateUserDto.languages;
     user.specialSkills = updateUserDto.specialSkills;
-    user.handle = updateUserDto.handle;
+    user.handle = !this.notAllowedHandles.includes(updateUserDto.handle) ? updateUserDto.handle : '';
 
     const updatedUser = await this.usersService.update(user);
 
@@ -98,7 +100,8 @@ export class UsersController {
   async checkHandle(@Body() body): Promise<boolean> {
     const handle = body.handle;
     const user = await this.usersService.findByHandle(handle);
-    return !!user && user.id !== body.userId;
+
+    return (!!user && user.id !== body.userId) || this.notAllowedHandles.includes(handle);
   }
 
   @Delete(':id')

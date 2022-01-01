@@ -20,6 +20,9 @@ export class WorkHistory {
   @Column({length: 1000})
   description: string;
 
+  @Column({default: 0})
+  order: number;
+
   @ManyToOne(() => User, (user) => user.socialMediaLinks, {
     nullable: false,
     onDelete: 'CASCADE'
@@ -51,6 +54,10 @@ export class CreateWorkHistoryDto {
   @IsNotEmpty()
   @MaxLength(1000)
   description: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  order: number;
 }
 
 export class UpdateWorkHistoryDto extends PartialType(CreateWorkHistoryDto) {

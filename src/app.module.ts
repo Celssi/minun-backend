@@ -9,6 +9,8 @@ import {UsersModule} from './users/users.module';
 import {LoginModule} from './login/login.module';
 import {VersionController} from './versions/version.controller';
 
+// TODO Vaihda sovellus käyttämään salaisuuksia
+
 @Module({
   imports: [
     ConfigModule.forRoot({

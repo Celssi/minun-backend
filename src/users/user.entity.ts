@@ -1,4 +1,4 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {AfterLoad, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, ValidateNested} from 'class-validator';
 import {SocialMediaLink} from './social-media-link.entity';
 import {CreateWorkHistoryDto, WorkHistory} from './work-history.entity';
@@ -73,6 +73,20 @@ export class User {
 
   @OneToMany(() => Education, (education) => education.user)
   educations: Education[];
+
+  @AfterLoad()
+  sortEducations() {
+    if (this?.educations?.length) {
+      this.educations.sort((a, b) => a.order - b.order);
+    }
+  }
+
+  @AfterLoad()
+  sortWorkHistories() {
+    if (this?.workHistories?.length) {
+      this.workHistories.sort((a, b) => a.order - b.order);
+    }
+  }
 }
 
 export class UserDto {

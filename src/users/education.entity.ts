@@ -20,6 +20,9 @@ export class Education {
   @Column({length: 1000})
   description: string;
 
+  @Column({default: 0})
+  order: number;
+
   @ManyToOne(() => User, (user) => user.socialMediaLinks, {
     nullable: false,
     onDelete: 'CASCADE'
@@ -51,6 +54,10 @@ export class CreateEducationDto {
   @IsNotEmpty()
   @MaxLength(1000)
   description: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  order: number;
 }
 
 export class UpdateEducationDto extends PartialType(CreateEducationDto) {
