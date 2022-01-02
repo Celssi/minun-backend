@@ -1,11 +1,12 @@
 import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
 import {UsersService} from './users.service';
-import {ChangePasswordDto, UpdateUserDto, User} from './user.entity';
 import {pbkdf2Sync, randomBytes} from 'crypto';
 import { Public } from 'src/auth/public.decorator';
-import {LinkType, SocialMediaLink} from './social-media-link.entity';
-import {WorkHistory} from './work-history.entity';
-import {Education} from './education.entity';
+import {ChangePasswordDto, UpdateUserDto, User} from 'src/models/user.entity';
+import {LinkType, SocialMediaLink} from '../models/social-media-link.entity';
+import {WorkHistory} from '../models/work-history.entity';
+import {Education} from '../models/education.entity';
+import {BusinessHour} from '../models/business-hour.entity';
 
 @Controller('api/users')
 export class UsersController {
@@ -74,6 +75,12 @@ export class UsersController {
       this.usersService.saveEducation(education);
     });
 
+    await this.usersService.removeAllBusinessHours(user.id);
+    updateUserDto.businessHours?.forEach((businessHour: BusinessHour) => {
+      businessHour.userId = user.id;
+      this.usersService.saveBusinessHour(businessHour);
+    });
+
     return updatedUser;
   }
 
@@ -92,7 +99,7 @@ export class UsersController {
   async checkEmail(@Body() body): Promise<boolean> {
     const email = body.email;
     const user = await this.usersService.findByEmail(email);
-    return !!user;
+    return !!user && user.id !== body.userId;
   }
 
   @Public()

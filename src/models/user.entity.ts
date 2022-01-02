@@ -5,6 +5,7 @@ import {CreateWorkHistoryDto, WorkHistory} from './work-history.entity';
 import {Type} from 'class-transformer';
 import {CreateEducationDto, Education} from './education.entity';
 import {PartialType} from '@nestjs/swagger';
+import {BusinessHour, CreateBusinessHourDto} from './business-hour.entity';
 
 @Entity()
 export class User {
@@ -74,6 +75,9 @@ export class User {
   @OneToMany(() => Education, (education) => education.user)
   educations: Education[];
 
+  @OneToMany(() => BusinessHour, (businessHour) => businessHour.user)
+  businessHours: BusinessHour[];
+
   @AfterLoad()
   sortEducations() {
     if (this?.educations?.length) {
@@ -85,6 +89,13 @@ export class User {
   sortWorkHistories() {
     if (this?.workHistories?.length) {
       this.workHistories.sort((a, b) => a.order - b.order);
+    }
+  }
+
+  @AfterLoad()
+  sortBusinessHours() {
+    if (this?.businessHours?.length) {
+      this.businessHours.sort((a, b) => a.order - b.order);
     }
   }
 }
@@ -193,15 +204,21 @@ export class UpdateUserDto extends PartialType(UserDto) {
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  @ValidateNested({each: true})
   @Type(() => CreateWorkHistoryDto)
   workHistories: CreateWorkHistoryDto[];
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  @ValidateNested({each: true})
   @Type(() => CreateEducationDto)
   educations: CreateEducationDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => CreateBusinessHourDto)
+  businessHours: CreateBusinessHourDto[];
 }
 
 export class ChangePasswordDto {

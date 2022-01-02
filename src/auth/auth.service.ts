@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import {pbkdf2Sync, randomBytes} from 'crypto';
 import {UsersService} from '../users/users.service';
-import {User} from '../users/user.entity';
+import {User} from '../models/user.entity';
 
 @Injectable()
 export class AuthService {

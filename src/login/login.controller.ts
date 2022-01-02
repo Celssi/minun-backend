@@ -4,7 +4,7 @@ import {LocalAuthGuard} from '../auth/local-auth.guard';
 import {Public} from '../auth/public.decorator';
 import {AuthService} from '../auth/auth.service';
 import {UsersService} from '../users/users.service';
-import {CreateUserDto} from '../users/user.entity';
+import {CreateUserDto} from '../models/user.entity';
 
 @Controller('api/users')
 export class LoginController {
