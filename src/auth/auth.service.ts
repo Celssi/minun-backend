@@ -3,6 +3,7 @@ import {JwtService} from '@nestjs/jwt';
 import {pbkdf2Sync, randomBytes} from 'crypto';
 import {UsersService} from '../users/users.service';
 import {User} from '../models/user.entity';
+import {jwtConstants} from './constants';
 
 @Injectable()
 export class AuthService {
@@ -34,9 +35,13 @@ export class AuthService {
     delete user.hash;
     delete user.salt;
 
+    const refreshToken = await this.handleRefreshToken(payload, user);
+    delete user.refreshToken;
+
     return {
       user: user,
-      token: this.jwtService.sign(payload)
+      token: this.jwtService.sign(payload),
+      refreshToken: refreshToken
     };
   }
 
@@ -58,10 +63,38 @@ export class AuthService {
     delete createdUser.hash;
 
     const payload = {email: user.email, sub: createdUser.id};
+    const refreshToken = await this.handleRefreshToken(payload, user);
+    delete createdUser.refreshToken;
 
     return {
       user: createdUser,
-      token: this.jwtService.sign(payload)
+      token: this.jwtService.sign(payload),
+      refreshToken: refreshToken
     };
+  }
+
+  private async handleRefreshToken(payload: { sub: number; email: any }, user: any) {
+    const refreshToken = this.jwtService.sign(payload, {expiresIn: '10m', secret: jwtConstants.refreshSecret});
+    user.refreshToken = refreshToken;
+    await this.usersService.update(user);
+    return refreshToken;
+  }
+
+  isRefreshTokenValid(refreshToken) {
+    try {
+      this.jwtService.verify(refreshToken, { secret: jwtConstants.refreshSecret});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  isTokenValid(token) {
+    try {
+      this.jwtService.verify(token);
+      return true;
+    } catch (e) {
+      return e.message === 'jwt expired';
+    }
   }
 }

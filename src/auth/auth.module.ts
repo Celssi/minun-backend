@@ -16,7 +16,7 @@ import {CurrentUserGuard} from './current-user.guard';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: {expiresIn: '7d'}
+      signOptions: {expiresIn: '5s'}
     }),
   ],
   providers: [

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req} from '@nestjs/common';
 import {UsersService} from './users.service';
 import {pbkdf2Sync, randomBytes} from 'crypto';
 import { Public } from 'src/auth/public.decorator';
@@ -19,7 +19,7 @@ export class UsersController {
 
   @Get()
   getAll(@Req() req): Promise<User[]> {
-    return this.usersService.findAll();
+    return this.usersService.findAllPublic();
   }
 
   @Get('current')
@@ -54,6 +54,7 @@ export class UsersController {
     user.languages = updateUserDto.languages;
     user.specialSkills = updateUserDto.specialSkills;
     user.handle = !this.notAllowedHandles.includes(updateUserDto.handle) ? updateUserDto.handle : '';
+    user.public = updateUserDto.public;
 
     const updatedUser = await this.usersService.update(user);
 
@@ -111,9 +112,13 @@ export class UsersController {
     return (!!user && user.id !== body.userId) || this.notAllowedHandles.includes(handle);
   }
 
-  @Delete(':id')
+  @Delete()
   async deleteUser(@Req() req, @Param() params): Promise<void> {
-    return await this.usersService.remove(params.id);
+    if (req.userFromDatabase?.id) {
+      return await this.usersService.remove(req.userFromDatabase.id);
+    }
+
+    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
 
   private async saveSocialMediaLink(userId: number, link: string, linkType: LinkType) {

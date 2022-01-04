@@ -2,13 +2,11 @@ import {ExecutionContext, Injectable} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {Reflector} from '@nestjs/core';
 import {IS_PUBLIC_KEY} from './public.decorator';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
-    private reflector: Reflector,
-    private usersService: UsersService
+    private reflector: Reflector
   ) {
     super();
   }

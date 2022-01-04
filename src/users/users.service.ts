@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import { User } from 'src/models/user.entity';
+import {User} from 'src/models/user.entity';
 import {Repository} from 'typeorm';
 import {SocialMediaLink} from '../models/social-media-link.entity';
 import {WorkHistory} from '../models/work-history.entity';
@@ -31,6 +31,10 @@ export class UsersService {
     return this.usersRepository.find({relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
   }
 
+  findAllPublic(): Promise<User[]> {
+    return this.usersRepository.find({where: {public: true}, relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+  }
+
   async findWithEmailIncludeHashAndSalt(email: string): Promise<User> {
     return this.usersRepository
       .createQueryBuilder()
@@ -54,12 +58,16 @@ export class UsersService {
     return this.usersRepository.findOne({email: email}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
   }
 
+  async findByRefreshToken(token: string) {
+    return this.usersRepository.findOne({refreshToken: token});
+  }
+
   async findByHandle(handle: string) {
     return this.usersRepository.findOne({handle: handle}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
   }
 
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+  async remove(id: number): Promise<void> {
+    await this.usersRepository.delete({id: id});
   }
 
   async removeAllSocialMediaLinks(userId: number): Promise<void> {

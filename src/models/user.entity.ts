@@ -1,5 +1,5 @@
 import {AfterLoad, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, ValidateNested} from 'class-validator';
+import {IsArray, IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, ValidateNested} from 'class-validator';
 import {SocialMediaLink} from './social-media-link.entity';
 import {CreateWorkHistoryDto, WorkHistory} from './work-history.entity';
 import {Type} from 'class-transformer';
@@ -60,11 +60,17 @@ export class User {
   @Column({default: true})
   active: boolean;
 
+  @Column({default: true})
+  public: boolean;
+
   @Column({length: 1024, select: false})
   hash: string;
 
   @Column({select: false})
   salt: string;
+
+  @Column({select: false})
+  refreshToken: string;
 
   @OneToMany(() => SocialMediaLink, (socialMediaLink) => socialMediaLink.user)
   socialMediaLinks: SocialMediaLink[];
@@ -219,6 +225,9 @@ export class UpdateUserDto extends PartialType(UserDto) {
   @ValidateNested({each: true})
   @Type(() => CreateBusinessHourDto)
   businessHours: CreateBusinessHourDto[];
+
+  @IsBoolean()
+  public: boolean;
 }
 
 export class ChangePasswordDto {

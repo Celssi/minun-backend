@@ -21,6 +21,18 @@ export class LoginController {
   }
 
   @Public()
+  @Post('refresh')
+  async refresh(@Req() req: Request) {
+    const user = await this.usersService.findByRefreshToken(req.body.refreshToken);
+
+    if (!user || !this.authService.isRefreshTokenValid(req.body.refreshToken) || !this.authService.isTokenValid(req.body.token)) {
+      throw new HttpException("Invalid refresh token", HttpStatus.FORBIDDEN);
+    }
+
+    return this.authService.login(user);
+  }
+
+  @Public()
   @Post('register')
   async register(@Req() req: Request, @Param() params, @Body() createUserDto: CreateUserDto) {
     const userFromDatabase = await this.usersService.findByEmail(createUserDto.email);
