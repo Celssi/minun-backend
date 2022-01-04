@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   private async handleRefreshToken(payload: { sub: number; email: any }, user: any) {
-    const refreshToken = this.jwtService.sign(payload, {expiresIn: '10m', secret: jwtConstants.refreshSecret});
+    const refreshToken = this.jwtService.sign(payload, {expiresIn: '1d', secret: jwtConstants.refreshSecret});
     user.refreshToken = refreshToken;
     await this.usersService.update(user);
     return refreshToken;
