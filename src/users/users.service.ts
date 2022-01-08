@@ -105,4 +105,19 @@ export class UsersService {
     const created = this.businessHoursRepository.create(businessHour);
     return this.businessHoursRepository.save(created);
   }
+
+  findWithSearchPhrase(searchPhrase: string, offset: number) {
+    return this.usersRepository.find({
+      where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
+      or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%')`,
+      relations: [
+        'socialMediaLinks',
+        'workHistories',
+        'educations',
+        'businessHours'
+      ],
+      take: 20,
+      skip: offset * 20
+    });
+  }
 }

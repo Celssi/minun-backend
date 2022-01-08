@@ -104,6 +104,13 @@ export class User {
       this.businessHours.sort((a, b) => a.order - b.order);
     }
   }
+
+  searchValues: string;
+
+  @AfterLoad()
+  setSearchValues() {
+    this.searchValues = (this.accountType === 'Company' ? this.companyName : (this.firstName + ' ' + this.lastName));
+  }
 }
 
 export class UserDto {

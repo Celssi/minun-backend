@@ -17,6 +17,7 @@ export class UsersController {
   ) {
   }
 
+  @Public()
   @Get()
   getAll(@Req() req): Promise<User[]> {
     return this.usersService.findAllPublic();
@@ -37,6 +38,12 @@ export class UsersController {
   @Get('with-handle/:id')
   async getWithHandle(@Req() req, @Param() params): Promise<User> {
     return this.usersService.findByHandle(params.id);
+  }
+
+  @Public()
+  @Get('search/:searchPhrase/:offset')
+  search(@Req() req): Promise<User[]> {
+    return this.usersService.findWithSearchPhrase(req.params.searchPhrase, req.params.offset);
   }
 
   @Put()
