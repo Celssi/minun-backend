@@ -109,7 +109,8 @@ export class UsersService {
   findWithSearchPhrase(searchPhrase: string, offset: number) {
     return this.usersRepository.find({
       where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
-      or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%')`,
+      or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%'
+      or handle like '%${searchPhrase}%')`,
       relations: [
         'socialMediaLinks',
         'workHistories',
