@@ -15,10 +15,10 @@ export class User {
   @Column({length: 300, unique: true})
   email: string;
 
-  @Column({length: 300, nullable: true})
+  @Column({length: 100, nullable: true})
   firstName: string;
 
-  @Column({length: 300, nullable: true})
+  @Column({length: 100, nullable: true})
   lastName: string;
 
   @Column({length: 300, nullable: true, unique: true})
@@ -33,7 +33,7 @@ export class User {
   @Column({length: 300})
   accountType: string;
 
-  @Column({nullable: true, length: 300})
+  @Column({nullable: true, length: 100})
   companyName: string;
 
   @Column({default: 'light', length: 300})
@@ -115,17 +115,17 @@ export class User {
 
 export class UserDto {
   @IsString()
-  @MaxLength(300)
+  @MaxLength(100)
   @IsOptional()
   firstName: string;
 
   @IsString()
-  @MaxLength(300)
+  @MaxLength(100)
   @IsOptional()
   lastName: string;
 
   @IsString()
-  @MaxLength(300)
+  @MaxLength(100)
   @IsOptional()
   companyName: string;
 
