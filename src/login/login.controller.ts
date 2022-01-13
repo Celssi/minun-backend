@@ -33,6 +33,13 @@ export class LoginController {
   }
 
   @Public()
+  @Post('login/facebook')
+  async loginWithFacebookToken(@Req() req: Request) {
+    const user = await this.usersService.findByFacebookToken(req.body.facebookToken);
+    return this.authService.login(user);
+  }
+
+  @Public()
   @Post('register')
   async register(@Req() req: Request, @Param() params, @Body() createUserDto: CreateUserDto) {
     const userFromDatabase = await this.usersService.findByEmail(createUserDto.email);

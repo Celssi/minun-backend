@@ -9,6 +9,7 @@ import {APP_GUARD} from '@nestjs/core';
 import {UsersModule} from '../users/users.module';
 import {AuthService} from './auth.service';
 import {CurrentUserGuard} from './current-user.guard';
+import {FacebookStrategy} from './facebook.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import {CurrentUserGuard} from './current-user.guard';
   providers: [
     AuthService,
     LocalStrategy,
+    FacebookStrategy,
     JwtStrategy,
     {
       provide: APP_GUARD,

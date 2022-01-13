@@ -72,6 +72,15 @@ export class User {
   @Column({select: false})
   refreshToken: string;
 
+  @Column({select: false, nullable: true})
+  facebookToken: string;
+
+  @Column({default: false})
+  allowFacebookLogin: boolean;
+
+  @Column({default: false})
+  allowGoogleLogin: boolean;
+
   @OneToMany(() => SocialMediaLink, (socialMediaLink) => socialMediaLink.user)
   socialMediaLinks: SocialMediaLink[];
 
@@ -235,6 +244,12 @@ export class UpdateUserDto extends PartialType(UserDto) {
 
   @IsBoolean()
   public: boolean;
+
+  @IsBoolean()
+  allowFacebookLogin: boolean;
+
+  @IsBoolean()
+  allowGoogleLogin: boolean;
 }
 
 export class ChangePasswordDto {

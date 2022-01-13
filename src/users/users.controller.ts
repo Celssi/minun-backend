@@ -62,6 +62,8 @@ export class UsersController {
     user.specialSkills = updateUserDto.specialSkills;
     user.handle = !this.notAllowedHandles.includes(updateUserDto.handle) ? updateUserDto.handle : '';
     user.public = updateUserDto.public;
+    user.allowFacebookLogin = updateUserDto.allowFacebookLogin;
+    user.allowGoogleLogin = updateUserDto.allowGoogleLogin;
 
     const updatedUser = await this.usersService.update(user);
 

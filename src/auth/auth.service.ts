@@ -54,6 +54,7 @@ export class AuthService {
     userToRegister.companyName = user.companyName;
     userToRegister.image = user.image;
     userToRegister.handle = (user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000);
+    userToRegister.refreshToken = randomBytes(16).toString('hex');
 
     userToRegister.salt = randomBytes(16).toString('hex');
     userToRegister.hash = pbkdf2Sync(user.password, userToRegister.salt, 10000, 512, 'sha512').toString('hex');
