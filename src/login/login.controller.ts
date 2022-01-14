@@ -1,12 +1,13 @@
-import {Body, Controller, HttpException, HttpStatus, Param, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards} from '@nestjs/common';
 import {Request} from 'express';
 import {LocalAuthGuard} from '../auth/local-auth.guard';
 import {Public} from '../auth/public.decorator';
 import {AuthService} from '../auth/auth.service';
 import {UsersService} from '../users/users.service';
 import {CreateUserDto} from '../models/user.entity';
+import {randomBytes} from 'crypto';
 
-@Controller('api/users')
+@Controller('api/login')
 export class LoginController {
   constructor(
     private authService: AuthService,
@@ -15,9 +16,18 @@ export class LoginController {
 
   @Public()
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post()
   async login(@Req() req: Request) {
     return this.authService.login(req.user);
+  }
+
+  @Get('logout')
+  async logout(@Req() req) {
+    const user = req.userFromDatabase;
+    user.facebookToken = null;
+    user.googleToken = null;
+    user.refreshToken = randomBytes(16).toString('hex');
+    await this.usersService.update(user);
   }
 
   @Public()
@@ -33,14 +43,14 @@ export class LoginController {
   }
 
   @Public()
-  @Post('login/facebook')
+  @Post('facebook')
   async loginWithFacebookToken(@Req() req: Request) {
     const user = await this.usersService.findByFacebookToken(req.body.facebookToken);
     return this.authService.login(user);
   }
 
   @Public()
-  @Post('login/google')
+  @Post('google')
   async loginWithGoogleToken(@Req() req: Request) {
     const user = await this.usersService.findByGoogleToken(req.body.googleToken);
     return this.authService.login(user);

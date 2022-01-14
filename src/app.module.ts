@@ -10,6 +10,7 @@ import {LoginModule} from './login/login.module';
 import {VersionController} from './versions/version.controller';
 
 // TODO Vaihda sovellus käyttämään salaisuuksia
+// TODO TypeORM migraatiot
 
 @Module({
   imports: [
