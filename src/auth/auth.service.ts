@@ -74,16 +74,9 @@ export class AuthService {
     };
   }
 
-  private async handleRefreshToken(payload: { sub: number; email: any }, user: any) {
-    const refreshToken = this.jwtService.sign(payload, {expiresIn: '1d', secret: jwtConstants.refreshSecret});
-    user.refreshToken = refreshToken;
-    await this.usersService.update(user);
-    return refreshToken;
-  }
-
   isRefreshTokenValid(refreshToken) {
     try {
-      this.jwtService.verify(refreshToken, { secret: jwtConstants.refreshSecret});
+      this.jwtService.verify(refreshToken, {secret: jwtConstants.refreshSecret});
       return true;
     } catch (e) {
       return false;
@@ -97,5 +90,12 @@ export class AuthService {
     } catch (e) {
       return e.message === 'jwt expired';
     }
+  }
+
+  private async handleRefreshToken(payload: { sub: number; email: any }, user: any) {
+    const refreshToken = this.jwtService.sign(payload, {expiresIn: '1d', secret: jwtConstants.refreshSecret});
+    user.refreshToken = refreshToken;
+    await this.usersService.update(user);
+    return refreshToken;
   }
 }

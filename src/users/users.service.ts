@@ -66,6 +66,10 @@ export class UsersService {
     return this.usersRepository.findOne({facebookToken: token});
   }
 
+  async findByGoogleToken(token: string) {
+    return this.usersRepository.findOne({googleToken: token});
+  }
+
   async findByHandle(handle: string) {
     return this.usersRepository.findOne({handle: handle}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
   }

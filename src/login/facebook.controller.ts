@@ -48,9 +48,7 @@ export class FacebookController {
       await this.usersService.create(user);
       res.redirect(process.env.FRONTEND_URL + '/kirjaudu/facebook/' + userDataFromFacebook.accessToken);
     } else {
-      return {
-        statusCode: HttpStatus.FORBIDDEN
-      }
+      res.redirect(process.env.FRONTEND_URL + '/kirjaudu/facebook');
     }
   }
 }

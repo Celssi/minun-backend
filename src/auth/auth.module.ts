@@ -10,6 +10,7 @@ import {UsersModule} from '../users/users.module';
 import {AuthService} from './auth.service';
 import {CurrentUserGuard} from './current-user.guard';
 import {FacebookStrategy} from './facebook.strategy';
+import {GoogleStrategy} from './google.strategy';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import {FacebookStrategy} from './facebook.strategy';
     AuthService,
     LocalStrategy,
     FacebookStrategy,
+    GoogleStrategy,
     JwtStrategy,
     {
       provide: APP_GUARD,

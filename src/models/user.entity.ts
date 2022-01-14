@@ -75,6 +75,9 @@ export class User {
   @Column({select: false, nullable: true})
   facebookToken: string;
 
+  @Column({select: false, nullable: true})
+  googleToken: string;
+
   @Column({default: false})
   allowFacebookLogin: boolean;
 
@@ -92,6 +95,7 @@ export class User {
 
   @OneToMany(() => BusinessHour, (businessHour) => businessHour.user)
   businessHours: BusinessHour[];
+  searchValues: string;
 
   @AfterLoad()
   sortEducations() {
@@ -113,8 +117,6 @@ export class User {
       this.businessHours.sort((a, b) => a.order - b.order);
     }
   }
-
-  searchValues: string;
 
   @AfterLoad()
   setSearchValues() {

@@ -1,7 +1,7 @@
 import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req} from '@nestjs/common';
 import {UsersService} from './users.service';
 import {pbkdf2Sync, randomBytes} from 'crypto';
-import { Public } from 'src/auth/public.decorator';
+import {Public} from 'src/auth/public.decorator';
 import {ChangePasswordDto, UpdateUserDto, User} from 'src/models/user.entity';
 import {LinkType, SocialMediaLink} from '../models/social-media-link.entity';
 import {WorkHistory} from '../models/work-history.entity';

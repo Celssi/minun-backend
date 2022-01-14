@@ -40,6 +40,13 @@ export class LoginController {
   }
 
   @Public()
+  @Post('login/google')
+  async loginWithGoogleToken(@Req() req: Request) {
+    const user = await this.usersService.findByGoogleToken(req.body.googleToken);
+    return this.authService.login(user);
+  }
+
+  @Public()
   @Post('register')
   async register(@Req() req: Request, @Param() params, @Body() createUserDto: CreateUserDto) {
     const userFromDatabase = await this.usersService.findByEmail(createUserDto.email);
