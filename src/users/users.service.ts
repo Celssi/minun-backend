@@ -71,7 +71,7 @@ export class UsersService {
   }
 
   async findByHandle(handle: string) {
-    return this.usersRepository.findOne({handle: handle}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.findOne({handle: handle.toLowerCase()}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
   }
 
   async remove(id: number): Promise<void> {
@@ -118,7 +118,7 @@ export class UsersService {
     return this.usersRepository.find({
       where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
       or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%'
-      or handle like '%${searchPhrase}%')`,
+      or handle like '%${searchPhrase}%' or specialSkills like '%${searchPhrase}%')`,
       relations: [
         'socialMediaLinks',
         'workHistories',

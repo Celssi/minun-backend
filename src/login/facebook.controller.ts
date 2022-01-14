@@ -43,7 +43,7 @@ export class FacebookController {
       user.email = userDataFromFacebook.user.email;
       user.allowFacebookLogin = true;
       user.facebookToken = userDataFromFacebook.accessToken;
-      user.handle = (user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000);
+      user.handle = ((user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000)).toLowerCase();
 
       await this.usersService.create(user);
       res.redirect(process.env.FRONTEND_URL + '/kirjaudu/facebook/' + userDataFromFacebook.accessToken);

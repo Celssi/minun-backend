@@ -60,7 +60,9 @@ export class UsersController {
     user.theme = updateUserDto.theme;
     user.languages = updateUserDto.languages;
     user.specialSkills = updateUserDto.specialSkills;
-    user.handle = !this.notAllowedHandles.includes(updateUserDto.handle) ? updateUserDto.handle : '';
+    user.handle = !this.notAllowedHandles.includes(updateUserDto.handle.toLowerCase()) ?
+      updateUserDto.handle.toLowerCase() :
+      ((user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000)).toLowerCase();
     user.public = updateUserDto.public;
     user.allowFacebookLogin = updateUserDto.allowFacebookLogin;
     user.allowGoogleLogin = updateUserDto.allowGoogleLogin;
@@ -115,7 +117,7 @@ export class UsersController {
   @Public()
   @Post('check-handle')
   async checkHandle(@Body() body): Promise<boolean> {
-    const handle = body.handle;
+    const handle = body.handle.toLowerCase();
     const user = await this.usersService.findByHandle(handle);
 
     return (!!user && user.id !== body.userId) || this.notAllowedHandles.includes(handle);
