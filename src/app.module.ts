@@ -8,9 +8,7 @@ import {MulterModule} from '@nestjs/platform-express';
 import {UsersModule} from './users/users.module';
 import {LoginModule} from './login/login.module';
 import {VersionController} from './versions/version.controller';
-
-// TODO Vaihda sovellus käyttämään salaisuuksia
-// TODO TypeORM migraatiot
+import dbConfig from './database.config';
 
 @Module({
   imports: [
@@ -18,17 +16,7 @@ import {VersionController} from './versions/version.controller';
       isGlobal: true
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'mysql',
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT) || 3306,
-        username: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-        cache: true,
-      })
+      useFactory: () => (dbConfig)
     }),
     MailerModule.forRootAsync({
       useFactory: async (config: ConfigService) => ({
