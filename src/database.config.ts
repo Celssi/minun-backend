@@ -9,8 +9,8 @@ const dbConfig: TypeOrmModuleOptions = {
   database: process.env.DB_NAME,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: [__dirname + '/migration/**/*.ts'],
-  cache: true,
+  migrations: [__dirname + '/migrations/*.ts'],
+  cache: true
 };
 
 export default dbConfig;

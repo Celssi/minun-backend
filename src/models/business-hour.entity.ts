@@ -1,30 +1,42 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength} from 'class-validator';
-import {PartialType} from '@nestjs/swagger';
-import {User} from './user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength
+} from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { User } from './user.entity';
 
 @Entity()
 export class BusinessHour {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default: false})
+  @Column({ default: false })
   open: boolean;
 
-  @Column({length: 5, default: '00:00'})
+  @Column({ length: 5, default: '00:00' })
   from: string;
 
-  @Column({length: 5, default: '00:00'})
+  @Column({ length: 5, default: '00:00' })
   to: string;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   order: number;
 
   @ManyToOne(() => User, (user) => user.socialMediaLinks, {
     nullable: false,
     onDelete: 'CASCADE'
   })
-  @JoinColumn({name: 'userId'})
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column()

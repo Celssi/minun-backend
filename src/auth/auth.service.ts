@@ -1,17 +1,18 @@
-import {Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import {pbkdf2Sync, randomBytes} from 'crypto';
-import {UsersService} from '../users/users.service';
-import {User} from '../models/user.entity';
-import {jwtConstants} from './constants';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { createHash, pbkdf2Sync, randomBytes } from 'crypto';
+import { UsersService } from '../users/users.service';
+import { User } from '../models/user.entity';
+import { jwtConstants } from './constants';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
-  ) {
-  }
+    private jwtService: JwtService,
+    private mailService: MailService
+  ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findWithEmailIncludeHashAndSalt(email);
@@ -30,12 +31,11 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = {email: user.email, sub: user.id};
+    const payload = { email: user.email, sub: user.id };
+    const refreshToken = await this.handleRefreshToken(payload, user);
 
     delete user.hash;
     delete user.salt;
-
-    const refreshToken = await this.handleRefreshToken(payload, user);
     delete user.refreshToken;
 
     return {
@@ -53,19 +53,36 @@ export class AuthService {
     userToRegister.accountType = user.accountType;
     userToRegister.companyName = user.companyName;
     userToRegister.image = user.image;
-    userToRegister.handle = ((user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000)).toLowerCase();
+    userToRegister.handle = (
+      (user.lastName ?? user.companyName).replace(' ', '') +
+      Math.floor(1000 + Math.random() * 9000)
+    ).toLowerCase();
     userToRegister.refreshToken = randomBytes(16).toString('hex');
 
     userToRegister.salt = randomBytes(16).toString('hex');
-    userToRegister.hash = pbkdf2Sync(user.password, userToRegister.salt, 10000, 512, 'sha512').toString('hex');
+    userToRegister.hash = pbkdf2Sync(
+      user.password,
+      userToRegister.salt,
+      10000,
+      512,
+      'sha512'
+    ).toString('hex');
 
     const createdUser = await this.usersService.create(userToRegister);
+    const payload = { email: user.email, sub: createdUser.id };
+    const refreshToken = await this.handleRefreshToken(payload, createdUser);
+
     delete createdUser.salt;
     delete createdUser.hash;
-
-    const payload = {email: user.email, sub: createdUser.id};
-    const refreshToken = await this.handleRefreshToken(payload, user);
     delete createdUser.refreshToken;
+
+    await this.mailService.sendInvitation(
+      'lauri.mukkala@outlook.com',
+      createHash('md5')
+        .update(user.email + user.email.toUpperCase())
+        .digest('hex'),
+      process.env.FRONTEND_URL
+    );
 
     return {
       user: createdUser,
@@ -76,7 +93,9 @@ export class AuthService {
 
   isRefreshTokenValid(refreshToken) {
     try {
-      this.jwtService.verify(refreshToken, {secret: jwtConstants.refreshSecret});
+      this.jwtService.verify(refreshToken, {
+        secret: jwtConstants.refreshSecret
+      });
       return true;
     } catch (e) {
       return false;
@@ -92,9 +111,16 @@ export class AuthService {
     }
   }
 
-  private async handleRefreshToken(payload: { sub: number; email: any }, user: any) {
-    const refreshToken = this.jwtService.sign(payload, {expiresIn: '1d', secret: jwtConstants.refreshSecret});
+  private async handleRefreshToken(
+    payload: { sub: number; email: any },
+    user: User
+  ) {
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '1d',
+      secret: jwtConstants.refreshSecret
+    });
     user.refreshToken = refreshToken;
+
     await this.usersService.update(user);
     return refreshToken;
   }

@@ -1,20 +1,20 @@
-import {MailerService} from '@nestjs-modules/mailer';
-import {Injectable} from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {
-  }
+  constructor(private mailerService: MailerService) {}
 
-  // Placeholder
-  async sendInvitation(email: string, code: string) {
+  async sendInvitation(email: string, code: string, frontendUrl: string) {
     await this.mailerService.sendMail({
       to: email,
-      from: 'info@minun.fi',
+      from: 'info@minun.info',
       subject: 'Tervetuloa käyttäjäksi!',
-      template: 'templates/invitation',
+      template: 'templates/confirmation',
       context: {
-        code
+        code,
+        email,
+        frontendUrl
       }
     });
   }

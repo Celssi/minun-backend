@@ -1,18 +1,25 @@
-import {Controller, Get, HttpStatus, Req, Res, UseGuards} from '@nestjs/common';
-import {Request} from 'express';
-import {AuthService} from '../auth/auth.service';
-import {UsersService} from '../users/users.service';
-import {AuthGuard} from '@nestjs/passport';
-import {Public} from '../auth/public.decorator';
-import {User} from '../models/user.entity';
-import {randomBytes} from 'crypto';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards
+} from '@nestjs/common';
+import { Request } from 'express';
+import { AuthService } from '../auth/auth.service';
+import { UsersService } from '../users/users.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from '../auth/public.decorator';
+import { User } from '../models/user.entity';
+import { randomBytes } from 'crypto';
 
 @Controller()
 export class GoogleController {
   constructor(
     private authService: AuthService,
-    private usersService: UsersService) {
-  }
+    private usersService: UsersService
+  ) {}
 
   @Public()
   @Get('/google')
@@ -22,16 +29,22 @@ export class GoogleController {
   }
 
   @Public()
-  @Get("/google/redirect")
+  @Get('/google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleLoginRedirect(@Req() req: Request, @Res() res): Promise<any> {
     const userDataFromGoogle = req.user as any;
-    const userFromDatabase = await this.usersService.findByEmail(userDataFromGoogle.email);
+    const userFromDatabase = await this.usersService.findByEmail(
+      userDataFromGoogle.email
+    );
 
     if (userFromDatabase && userFromDatabase.allowGoogleLogin) {
       userFromDatabase.googleToken = userDataFromGoogle.accessToken;
       await this.usersService.update(userFromDatabase);
-      res.redirect(process.env.FRONTEND_URL + '/kirjaudu/google/' + userDataFromGoogle.accessToken);
+      res.redirect(
+        process.env.FRONTEND_URL +
+          '/kirjaudu/google/' +
+          userDataFromGoogle.accessToken
+      );
     } else if (!userFromDatabase) {
       const user = new User();
       user.accountType = 'user';
@@ -43,10 +56,18 @@ export class GoogleController {
       user.email = userDataFromGoogle.email;
       user.allowGoogleLogin = true;
       user.googleToken = userDataFromGoogle.accessToken;
-      user.handle = ((user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000)).toLowerCase();
+      user.confirmed = true;
+      user.handle = (
+        (user.lastName ?? user.companyName).replace(' ', '') +
+        Math.floor(1000 + Math.random() * 9000)
+      ).toLowerCase();
 
       await this.usersService.create(user);
-      res.redirect(process.env.FRONTEND_URL + '/kirjaudu/google/' + userDataFromGoogle.accessToken);
+      res.redirect(
+        process.env.FRONTEND_URL +
+          '/kirjaudu/google/' +
+          userDataFromGoogle.accessToken
+      );
     } else {
       res.redirect(process.env.FRONTEND_URL + '/kirjaudu/google');
     }

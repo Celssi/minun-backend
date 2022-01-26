@@ -1,10 +1,10 @@
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 import * as compression from 'compression';
 import * as helmet from 'helmet';
-import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
-import {json, urlencoded} from 'express';
-import {ValidationPipe} from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,17 +22,19 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.use(json({limit: '50mb'}));
-  app.use(urlencoded({extended: true, limit: '50mb'}));
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidUnknownValues: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidUnknownValues: true,
+      transformOptions: {
+        enableImplicitConversion: true
+      }
+    })
+  );
 
   await app.listen(3000);
 }

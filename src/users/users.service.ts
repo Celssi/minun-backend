@@ -1,11 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {User} from 'src/models/user.entity';
-import {Repository} from 'typeorm';
-import {SocialMediaLink} from '../models/social-media-link.entity';
-import {WorkHistory} from '../models/work-history.entity';
-import {Education} from '../models/education.entity';
-import {BusinessHour} from '../models/business-hour.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/models/user.entity';
+import { Repository } from 'typeorm';
+import { SocialMediaLink } from '../models/social-media-link.entity';
+import { WorkHistory } from '../models/work-history.entity';
+import { Education } from '../models/education.entity';
+import { BusinessHour } from '../models/business-hour.entity';
 
 @Injectable()
 export class UsersService {
@@ -20,25 +20,49 @@ export class UsersService {
     private educationsRepository: Repository<Education>,
     @InjectRepository(BusinessHour)
     private businessHoursRepository: Repository<BusinessHour>
-  ) {
-  }
+  ) {}
 
   async findById(userId: number): Promise<User> {
-    return this.usersRepository.findOne({id: userId}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.findOne(
+      { id: userId },
+      {
+        relations: [
+          'socialMediaLinks',
+          'workHistories',
+          'educations',
+          'businessHours'
+        ]
+      }
+    );
   }
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find({relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.find({
+      relations: [
+        'socialMediaLinks',
+        'workHistories',
+        'educations',
+        'businessHours'
+      ]
+    });
   }
 
   findAllPublic(): Promise<User[]> {
-    return this.usersRepository.find({where: {public: true}, relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.find({
+      where: { public: true },
+      relations: [
+        'socialMediaLinks',
+        'workHistories',
+        'educations',
+        'businessHours'
+      ]
+    });
   }
 
   async findWithEmailIncludeHashAndSalt(email: string): Promise<User> {
     return this.usersRepository
       .createQueryBuilder()
-      .where({email})
+      .where({ email })
       .addSelect('User.hash')
       .addSelect('User.salt')
       .leftJoinAndSelect('User.socialMediaLinks', 'socialMediaLinks')
@@ -55,31 +79,51 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return this.usersRepository.findOne({email: email}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.findOne(
+      { email: email },
+      {
+        relations: [
+          'socialMediaLinks',
+          'workHistories',
+          'educations',
+          'businessHours'
+        ]
+      }
+    );
   }
 
   async findByRefreshToken(token: string) {
-    return this.usersRepository.findOne({refreshToken: token});
+    return this.usersRepository.findOne({ refreshToken: token });
   }
 
   async findByFacebookToken(token: string) {
-    return this.usersRepository.findOne({facebookToken: token});
+    return this.usersRepository.findOne({ facebookToken: token });
   }
 
   async findByGoogleToken(token: string) {
-    return this.usersRepository.findOne({googleToken: token});
+    return this.usersRepository.findOne({ googleToken: token });
   }
 
   async findByHandle(handle: string) {
-    return this.usersRepository.findOne({handle: handle.toLowerCase()}, {relations: ['socialMediaLinks', 'workHistories', 'educations', 'businessHours']});
+    return this.usersRepository.findOne(
+      { handle: handle.toLowerCase() },
+      {
+        relations: [
+          'socialMediaLinks',
+          'workHistories',
+          'educations',
+          'businessHours'
+        ]
+      }
+    );
   }
 
   async remove(id: number): Promise<void> {
-    await this.usersRepository.delete({id: id});
+    await this.usersRepository.delete({ id: id });
   }
 
   async removeAllSocialMediaLinks(userId: number): Promise<void> {
-    await this.socialMediaLinksRepository.delete({userId: userId});
+    await this.socialMediaLinksRepository.delete({ userId: userId });
   }
 
   saveSocialMediaLink(socialMediaLink: SocialMediaLink) {
@@ -88,7 +132,7 @@ export class UsersService {
   }
 
   async removeAllWorkHistories(userId: number): Promise<void> {
-    await this.workHistoriesRepository.delete({userId: userId});
+    await this.workHistoriesRepository.delete({ userId: userId });
   }
 
   saveWorkHistory(workHistory: WorkHistory) {
@@ -97,7 +141,7 @@ export class UsersService {
   }
 
   async removeAllEducations(userId: number): Promise<void> {
-    await this.educationsRepository.delete({userId: userId});
+    await this.educationsRepository.delete({ userId: userId });
   }
 
   saveEducation(education: Education) {
@@ -106,7 +150,7 @@ export class UsersService {
   }
 
   async removeAllBusinessHours(userId: number): Promise<void> {
-    await this.businessHoursRepository.delete({userId: userId});
+    await this.businessHoursRepository.delete({ userId: userId });
   }
 
   saveBusinessHour(businessHour: BusinessHour) {

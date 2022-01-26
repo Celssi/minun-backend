@@ -1,25 +1,40 @@
-import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req} from '@nestjs/common';
-import {UsersService} from './users.service';
-import {pbkdf2Sync, randomBytes} from 'crypto';
-import {Public} from 'src/auth/public.decorator';
-import {ChangePasswordDto, UpdateUserDto, User} from 'src/models/user.entity';
-import {LinkType, SocialMediaLink} from '../models/social-media-link.entity';
-import {WorkHistory} from '../models/work-history.entity';
-import {Education} from '../models/education.entity';
-import {BusinessHour} from '../models/business-hour.entity';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Req
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { pbkdf2Sync, randomBytes } from 'crypto';
+import { Public } from 'src/auth/public.decorator';
+import { ChangePasswordDto, UpdateUserDto, User } from 'src/models/user.entity';
+import { LinkType, SocialMediaLink } from '../models/social-media-link.entity';
+import { WorkHistory } from '../models/work-history.entity';
+import { Education } from '../models/education.entity';
+import { BusinessHour } from '../models/business-hour.entity';
 
 @Controller('api/users')
 export class UsersController {
-  notAllowedHandles = ['etusivu', 'kirjaudu', 'tutustu', 'logout', 'etsi'];
+  notAllowedHandles = [
+    'etusivu',
+    'kirjaudu',
+    'tutustu',
+    'logout',
+    'etsi',
+    'vahvista'
+  ];
 
-  constructor(
-    private readonly usersService: UsersService,
-  ) {
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   @Public()
   @Get()
-  getAll(@Req() req): Promise<User[]> {
+  async getAll(@Req() req): Promise<User[]> {
     return this.usersService.findAllPublic();
   }
 
@@ -43,11 +58,17 @@ export class UsersController {
   @Public()
   @Get('search/:searchPhrase/:offset')
   search(@Req() req): Promise<User[]> {
-    return this.usersService.findWithSearchPhrase(req.params.searchPhrase, req.params.offset);
+    return this.usersService.findWithSearchPhrase(
+      req.params.searchPhrase,
+      req.params.offset
+    );
   }
 
   @Put()
-  async update(@Req() req, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    @Req() req,
+    @Body() updateUserDto: UpdateUserDto
+  ): Promise<User> {
     const user = new User();
     user.id = req.userFromDatabase.id;
     user.firstName = updateUserDto.firstName;
@@ -60,9 +81,14 @@ export class UsersController {
     user.theme = updateUserDto.theme;
     user.languages = updateUserDto.languages;
     user.specialSkills = updateUserDto.specialSkills;
-    user.handle = !this.notAllowedHandles.includes(updateUserDto.handle.toLowerCase()) ?
-      updateUserDto.handle.toLowerCase() :
-      ((user.lastName ?? user.companyName).replace(' ', '') + Math.floor(1000 + Math.random() * 9000)).toLowerCase();
+    user.handle = !this.notAllowedHandles.includes(
+      updateUserDto.handle.toLowerCase()
+    )
+      ? updateUserDto.handle.toLowerCase()
+      : (
+          (user.lastName ?? user.companyName).replace(' ', '') +
+          Math.floor(1000 + Math.random() * 9000)
+        ).toLowerCase();
     user.public = updateUserDto.public;
     user.allowFacebookLogin = updateUserDto.allowFacebookLogin;
     user.allowGoogleLogin = updateUserDto.allowGoogleLogin;
@@ -70,10 +96,26 @@ export class UsersController {
     const updatedUser = await this.usersService.update(user);
 
     await this.usersService.removeAllSocialMediaLinks(user.id);
-    await this.saveSocialMediaLink(user.id, updateUserDto.facebook, LinkType.Facebook);
-    await this.saveSocialMediaLink(user.id, updateUserDto.twitter, LinkType.Twitter);
-    await this.saveSocialMediaLink(user.id, updateUserDto.github, LinkType.Github);
-    await this.saveSocialMediaLink(user.id, updateUserDto.linkedin, LinkType.Linkedin);
+    await this.saveSocialMediaLink(
+      user.id,
+      updateUserDto.facebook,
+      LinkType.Facebook
+    );
+    await this.saveSocialMediaLink(
+      user.id,
+      updateUserDto.twitter,
+      LinkType.Twitter
+    );
+    await this.saveSocialMediaLink(
+      user.id,
+      updateUserDto.github,
+      LinkType.Github
+    );
+    await this.saveSocialMediaLink(
+      user.id,
+      updateUserDto.linkedin,
+      LinkType.Linkedin
+    );
 
     await this.usersService.removeAllWorkHistories(user.id);
     updateUserDto.workHistories?.forEach((workHistory: WorkHistory) => {
@@ -97,11 +139,20 @@ export class UsersController {
   }
 
   @Put('change-password')
-  async changePassword(@Req() req, @Body() changePasswordDto: ChangePasswordDto): Promise<User> {
+  async changePassword(
+    @Req() req,
+    @Body() changePasswordDto: ChangePasswordDto
+  ): Promise<User> {
     const user = new User();
     user.id = req.userFromDatabase.id;
     user.salt = randomBytes(16).toString('hex');
-    user.hash = pbkdf2Sync(changePasswordDto.password, user.salt, 10000, 512, 'sha512').toString('hex');
+    user.hash = pbkdf2Sync(
+      changePasswordDto.password,
+      user.salt,
+      10000,
+      512,
+      'sha512'
+    ).toString('hex');
 
     return this.usersService.update(user);
   }
@@ -120,7 +171,10 @@ export class UsersController {
     const handle = body.handle.toLowerCase();
     const user = await this.usersService.findByHandle(handle);
 
-    return (!!user && user.id !== body.userId) || this.notAllowedHandles.includes(handle);
+    return (
+      (!!user && user.id !== body.userId) ||
+      this.notAllowedHandles.includes(handle)
+    );
   }
 
   @Delete()
@@ -132,7 +186,11 @@ export class UsersController {
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
   }
 
-  private async saveSocialMediaLink(userId: number, link: string, linkType: LinkType) {
+  private async saveSocialMediaLink(
+    userId: number,
+    link: string,
+    linkType: LinkType
+  ) {
     if (link) {
       const socialMediaLink = new SocialMediaLink();
       socialMediaLink.userId = userId;

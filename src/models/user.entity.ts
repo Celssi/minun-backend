@@ -1,88 +1,107 @@
-import {AfterLoad, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {IsArray, IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, ValidateNested} from 'class-validator';
-import {SocialMediaLink} from './social-media-link.entity';
-import {CreateWorkHistoryDto, WorkHistory} from './work-history.entity';
-import {Type} from 'class-transformer';
-import {CreateEducationDto, Education} from './education.entity';
-import {PartialType} from '@nestjs/swagger';
-import {BusinessHour, CreateBusinessHourDto} from './business-hour.entity';
+import {
+  AfterLoad,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
+import {
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  ValidateNested
+} from 'class-validator';
+import { SocialMediaLink } from './social-media-link.entity';
+import { CreateWorkHistoryDto, WorkHistory } from './work-history.entity';
+import { Type } from 'class-transformer';
+import { CreateEducationDto, Education } from './education.entity';
+import { PartialType } from '@nestjs/swagger';
+import { BusinessHour, CreateBusinessHourDto } from './business-hour.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({length: 300, unique: true})
+  @Column({ length: 300, unique: true })
   email: string;
 
-  @Column({length: 100, nullable: true})
+  @Column({ length: 100, nullable: true })
   firstName: string;
 
-  @Column({length: 100, nullable: true})
+  @Column({ length: 100, nullable: true })
   lastName: string;
 
-  @Column({length: 300, nullable: true, unique: true})
+  @Column({ length: 300, nullable: true, unique: true })
   handle: string;
 
-  @Column({length: 300, nullable: true})
+  @Column({ length: 300, nullable: true })
   title: string;
 
-  @Column({length: 300, nullable: true})
+  @Column({ length: 300, nullable: true })
   phone: string;
 
-  @Column({length: 300})
+  @Column({ length: 300 })
   accountType: string;
 
-  @Column({nullable: true, length: 100})
+  @Column({ nullable: true, length: 100 })
   companyName: string;
 
-  @Column({default: 'light', length: 300})
+  @Column({ default: 'light', length: 300 })
   theme: string;
 
-  @Column({nullable: true, type: 'longtext'})
+  @Column({ nullable: true, type: 'longtext' })
   image: string;
 
-  @Column({length: 1000, nullable: true})
+  @Column({ length: 1000, nullable: true })
   description: string;
 
-  @Column({nullable: true, length: 300})
+  @Column({ nullable: true, length: 300 })
   website: string;
 
-  @Column({nullable: true, length: 300})
+  @Column({ nullable: true, length: 300 })
   location: string;
 
-  @Column({nullable: true, length: 1000})
+  @Column({ nullable: true, length: 1000 })
   languages: string;
 
-  @Column({nullable: true, length: 1000})
+  @Column({ nullable: true, length: 1000 })
   specialSkills: string;
 
-  @Column({default: true})
+  @Column({ default: true })
   active: boolean;
 
-  @Column({default: true})
+  @Column({ default: true })
   public: boolean;
 
-  @Column({length: 1024, select: false})
+  @Column({ length: 1024, select: false })
   hash: string;
 
-  @Column({select: false})
+  @Column({ select: false })
   salt: string;
 
-  @Column({select: false})
+  @Column({ select: false })
   refreshToken: string;
 
-  @Column({select: false, nullable: true})
+  @Column({ select: false, nullable: true })
   facebookToken: string;
 
-  @Column({select: false, nullable: true})
+  @Column({ select: false, nullable: true })
   googleToken: string;
 
-  @Column({default: false})
+  @Column({ default: false })
   allowFacebookLogin: boolean;
 
-  @Column({default: false})
+  @Column({ default: false })
   allowGoogleLogin: boolean;
+
+  @Column({ default: false })
+  confirmed: boolean;
 
   @OneToMany(() => SocialMediaLink, (socialMediaLink) => socialMediaLink.user)
   socialMediaLinks: SocialMediaLink[];
@@ -120,7 +139,10 @@ export class User {
 
   @AfterLoad()
   setSearchValues() {
-    this.searchValues = (this.accountType === 'Company' ? this.companyName : (this.firstName + ' ' + this.lastName));
+    this.searchValues =
+      this.accountType === 'Company'
+        ? this.companyName
+        : this.firstName + ' ' + this.lastName;
   }
 }
 
@@ -228,19 +250,19 @@ export class UpdateUserDto extends PartialType(UserDto) {
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => CreateWorkHistoryDto)
   workHistories: CreateWorkHistoryDto[];
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => CreateEducationDto)
   educations: CreateEducationDto[];
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => CreateBusinessHourDto)
   businessHours: CreateBusinessHourDto[];
 

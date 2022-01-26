@@ -1,5 +1,11 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {User} from './user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
+import { User } from './user.entity';
 
 export enum LinkType {
   Facebook,
@@ -16,14 +22,14 @@ export class SocialMediaLink {
   @Column()
   link: string;
 
-  @Column('enum', {enum: LinkType})
+  @Column('enum', { enum: LinkType })
   type: LinkType;
 
   @ManyToOne(() => User, (user) => user.socialMediaLinks, {
     nullable: false,
     onDelete: 'CASCADE'
   })
-  @JoinColumn({name: 'userId'})
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column()
