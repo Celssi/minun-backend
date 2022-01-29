@@ -165,14 +165,14 @@ export class UserDto {
   @IsString()
   @IsOptional()
   image: string;
-}
 
-export class CreateUserDto extends PartialType(UserDto) {
   @IsEmail()
   @MaxLength(300)
   @IsNotEmpty()
   email: string;
+}
 
+export class CreateUserDto extends PartialType(UserDto) {
   @IsString()
   @IsNotEmpty()
   @MaxLength(300)

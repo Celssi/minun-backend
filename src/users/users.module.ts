@@ -7,6 +7,7 @@ import { Education } from '../models/education.entity';
 import { BusinessHour } from '../models/business-hour.entity';
 import { SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { WorkHistory } from '../models/work-history.entity';
       BusinessHour
     ])
   ],
-  providers: [UsersService],
+  providers: [UsersService, MailService],
   exports: [UsersService],
   controllers: [UsersController]
 })

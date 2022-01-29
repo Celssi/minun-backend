@@ -11,13 +11,14 @@ import {
   Req
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { pbkdf2Sync, randomBytes } from 'crypto';
+import { createHash, pbkdf2Sync, randomBytes } from 'crypto';
 import { Public } from 'src/auth/public.decorator';
 import { ChangePasswordDto, UpdateUserDto, User } from 'src/models/user.entity';
 import { LinkType, SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
 import { Education } from '../models/education.entity';
 import { BusinessHour } from '../models/business-hour.entity';
+import { MailService } from '../mail/mail.service';
 
 @Controller('api/users')
 export class UsersController {
@@ -30,7 +31,10 @@ export class UsersController {
     'vahvista'
   ];
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private mailService: MailService
+  ) {}
 
   @Public()
   @Get()
@@ -93,7 +97,21 @@ export class UsersController {
     user.allowFacebookLogin = updateUserDto.allowFacebookLogin;
     user.allowGoogleLogin = updateUserDto.allowGoogleLogin;
 
+    const emailChanged = req.userFromDatabase.email !== updateUserDto.email;
+    user.confirmed = user.confirmed && !emailChanged;
+    user.email = updateUserDto.email;
+
     const updatedUser = await this.usersService.update(user);
+
+    if (emailChanged) {
+      await this.mailService.sendConfirmation(
+        updatedUser.email,
+        createHash('md5')
+          .update(updatedUser.email + updatedUser.email.toUpperCase())
+          .digest('hex'),
+        process.env.FRONTEND_URL
+      );
+    }
 
     await this.usersService.removeAllSocialMediaLinks(user.id);
     await this.saveSocialMediaLink(

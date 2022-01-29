@@ -76,7 +76,7 @@ export class AuthService {
     delete createdUser.hash;
     delete createdUser.refreshToken;
 
-    await this.mailService.sendInvitation(
+    await this.mailService.sendConfirmation(
       'lauri.mukkala@outlook.com',
       createHash('md5')
         .update(user.email + user.email.toUpperCase())
