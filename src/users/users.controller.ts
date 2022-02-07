@@ -19,6 +19,8 @@ import { WorkHistory } from '../models/work-history.entity';
 import { Education } from '../models/education.entity';
 import { BusinessHour } from '../models/business-hour.entity';
 import { MailService } from '../mail/mail.service';
+import { ResetRequest, ResetRequestDto } from '../models/resetRequest.entity';
+import { ResetRequestsService } from '../resetRequests/resetRequests.service';
 
 @Controller('api/users')
 export class UsersController {
@@ -33,7 +35,8 @@ export class UsersController {
 
   constructor(
     private readonly usersService: UsersService,
-    private mailService: MailService
+    private mailService: MailService,
+    private resetRequestsService: ResetRequestsService
   ) {}
 
   @Public()
@@ -173,6 +176,53 @@ export class UsersController {
     ).toString('hex');
 
     return this.usersService.update(user);
+  }
+
+  @Public()
+  @Get('reset-password/:code')
+  async getResetPassword(@Req() req, @Param() params) {
+    return await this.resetRequestsService.findByCode(params.code);
+  }
+
+  @Public()
+  @Post('reset-password')
+  async resetPassword(@Req() req, @Body() body: ResetRequestDto) {
+    if (body.email) {
+      const user = await this.usersService.findByEmail(body.email);
+
+      if (user) {
+        const resetRequest = new ResetRequest();
+        resetRequest.user = user;
+        resetRequest.code = randomBytes(16).toString('hex');
+        const created = await this.resetRequestsService.create(resetRequest);
+
+        await this.mailService.sendResetPassword(
+          body.email,
+          created.code,
+          process.env.FRONTEND_URL
+        );
+      }
+    } else if (body.password && body.code) {
+      const resetRequest = await this.resetRequestsService.findByCode(
+        body.code
+      );
+
+      if (!resetRequest) {
+        throw new HttpException('Code was invalid', HttpStatus.NOT_FOUND);
+      }
+
+      resetRequest.user.salt = randomBytes(16).toString('hex');
+      resetRequest.user.hash = pbkdf2Sync(
+        body.password,
+        resetRequest.user.salt,
+        10000,
+        512,
+        'sha512'
+      ).toString('hex');
+
+      await this.usersService.update(resetRequest.user);
+      await this.resetRequestsService.remove(resetRequest.id);
+    }
   }
 
   @Public()

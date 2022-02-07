@@ -163,12 +163,7 @@ export class UsersService {
       where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
       or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%'
       or handle like '%${searchPhrase}%' or specialSkills like '%${searchPhrase}%')`,
-      relations: [
-        'socialMediaLinks',
-        'workHistories',
-        'educations',
-        'businessHours'
-      ],
+      relations: ['socialMediaLinks'],
       take: 20,
       skip: offset * 20
     });

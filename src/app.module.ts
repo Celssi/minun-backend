@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { LoginModule } from './login/login.module';
 import { VersionController } from './versions/version.controller';
 import dbConfig from './database.config';
+import { ResetRequestModule } from './resetRequests/resetRequest.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import dbConfig from './database.config';
     }),
     UsersModule,
     LoginModule,
+    ResetRequestModule,
     MulterModule.register({
       dest: './upload'
     })

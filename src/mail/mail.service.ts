@@ -18,4 +18,17 @@ export class MailService {
       }
     });
   }
+
+  async sendResetPassword(email: string, code: string, frontendUrl: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      from: 'info@minun.info',
+      subject: 'Salasanan nollaaminen',
+      template: 'templates/resetpassword',
+      context: {
+        frontendUrl: frontendUrl,
+        code: code
+      }
+    });
+  }
 }

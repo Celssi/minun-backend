@@ -10,7 +10,8 @@ const dbConfig: TypeOrmModuleOptions = {
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/migrations/*.ts'],
-  cache: true
+  cache: true,
+  logging: false
 };
 
 export default dbConfig;

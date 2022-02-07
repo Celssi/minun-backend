@@ -8,6 +8,7 @@ import { BusinessHour } from '../models/business-hour.entity';
 import { SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
 import { MailService } from '../mail/mail.service';
+import { ResetRequestModule } from '../resetRequests/resetRequest.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { MailService } from '../mail/mail.service';
       WorkHistory,
       Education,
       BusinessHour
-    ])
+    ]),
+    ResetRequestModule
   ],
   providers: [UsersService, MailService],
   exports: [UsersService],

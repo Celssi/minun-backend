@@ -22,6 +22,7 @@ import { Type } from 'class-transformer';
 import { CreateEducationDto, Education } from './education.entity';
 import { PartialType } from '@nestjs/swagger';
 import { BusinessHour, CreateBusinessHourDto } from './business-hour.entity';
+import { ResetRequest } from './resetRequest.entity';
 
 @Entity()
 export class User {
@@ -115,6 +116,9 @@ export class User {
   @OneToMany(() => BusinessHour, (businessHour) => businessHour.user)
   businessHours: BusinessHour[];
   searchValues: string;
+
+  @OneToMany(() => ResetRequest, (resetRequest) => resetRequest.user)
+  resetRequests: ResetRequest[];
 
   @AfterLoad()
   sortEducations() {
