@@ -5,7 +5,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength
+} from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { User } from './user.entity';
 
@@ -23,7 +29,7 @@ export class WorkHistory {
   @Column({ length: 300 })
   period: string;
 
-  @Column({ length: 1000 })
+  @Column({ length: 1000, nullable: true })
   description: string;
 
   @Column({ default: 0 })
@@ -57,7 +63,7 @@ export class CreateWorkHistoryDto {
   period: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(1000)
   description: string;
 
