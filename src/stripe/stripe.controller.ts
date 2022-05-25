@@ -102,23 +102,4 @@ export class StripeController {
       await this.stripeService.updateSubscription(subscription);
     }
   }
-
-  @Public()
-  @Post('webhook')
-  async webhook(@Res() res, @Body() body: Stripe.Event) {
-    if (body.type === 'setup_intent.succeeded') {
-      const paymentIntent = body.data.object as Stripe.PaymentIntent;
-      const subscriptions = await this.stripeService.getSubscriptions(
-        paymentIntent.customer as string
-      );
-
-      if (subscriptions.data.length > 0) {
-        const subscription = subscriptions.data[0];
-        console.log(subscription);
-        subscription.pending_setup_intent = paymentIntent.id;
-        subscription.default_payment_method = paymentIntent.payment_method;
-        await this.stripeService.updateSubscription(subscription);
-      }
-    }
-  }
 }
