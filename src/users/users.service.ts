@@ -162,7 +162,7 @@ export class UsersService {
     return this.usersRepository.find({
       where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
       or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%'
-      or handle like '%${searchPhrase}%' or specialSkills like '%${searchPhrase}%')`,
+      or handle like '%${searchPhrase}%' or specialSkills like '%${searchPhrase}%') and stripeCustomer is not null`,
       relations: ['socialMediaLinks'],
       take: 20,
       skip: offset * 20

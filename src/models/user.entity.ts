@@ -104,6 +104,9 @@ export class User {
   @Column({ default: false })
   confirmed: boolean;
 
+  @Column({ length: 100, nullable: true })
+  stripeCustomer: string;
+
   @OneToMany(() => SocialMediaLink, (socialMediaLink) => socialMediaLink.user)
   socialMediaLinks: SocialMediaLink[];
 

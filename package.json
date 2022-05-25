@@ -50,8 +50,10 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5",
+    "stripe": "^9.2.0",
     "swagger-ui-express": "^4.4.0",
-    "typeorm": "^0.2.45"
+    "typeorm": "^0.2.45",
+    "@stripe/stripe-js": "^1.29.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.6",

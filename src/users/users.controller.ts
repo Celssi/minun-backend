@@ -21,6 +21,7 @@ import { BusinessHour } from '../models/business-hour.entity';
 import { MailService } from '../mail/mail.service';
 import { ResetRequest, ResetRequestDto } from '../models/resetRequest.entity';
 import { ResetRequestsService } from '../resetRequests/resetRequests.service';
+import { StripeService } from '../stripe/stripe.service';
 
 @Controller('api/users')
 export class UsersController {
@@ -36,7 +37,8 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private mailService: MailService,
-    private resetRequestsService: ResetRequestsService
+    private resetRequestsService: ResetRequestsService,
+    private stripeService: StripeService
   ) {}
 
   @Public()
@@ -59,7 +61,9 @@ export class UsersController {
   @Public()
   @Get('with-handle/:id')
   async getWithHandle(@Req() req, @Param() params): Promise<User> {
-    return this.usersService.findByHandle(params.id);
+    const user = await this.usersService.findByHandle(params.id);
+    const hasSubscription = await this.stripeService.hasSubscription(user);
+    return hasSubscription ? user : undefined;
   }
 
   @Public()
@@ -88,6 +92,7 @@ export class UsersController {
     user.theme = updateUserDto.theme;
     user.languages = updateUserDto.languages;
     user.specialSkills = updateUserDto.specialSkills;
+    user.companyName = updateUserDto.companyName;
     user.handle = !this.notAllowedHandles.includes(
       updateUserDto.handle.toLowerCase()
     )

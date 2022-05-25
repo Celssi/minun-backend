@@ -9,6 +9,7 @@ import { SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
 import { MailService } from '../mail/mail.service';
 import { ResetRequestModule } from '../resetRequests/resetRequest.module';
+import { StripeService } from '../stripe/stripe.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ResetRequestModule } from '../resetRequests/resetRequest.module';
     ]),
     ResetRequestModule
   ],
-  providers: [UsersService, MailService],
+  providers: [UsersService, MailService, StripeService],
   exports: [UsersService],
   controllers: [UsersController]
 })

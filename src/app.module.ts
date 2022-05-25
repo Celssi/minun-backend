@@ -10,6 +10,7 @@ import { LoginModule } from './login/login.module';
 import { VersionController } from './versions/version.controller';
 import dbConfig from './database.config';
 import { ResetRequestModule } from './resetRequests/resetRequest.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ResetRequestModule } from './resetRequests/resetRequest.module';
       inject: [ConfigService]
     }),
     UsersModule,
+    StripeModule,
     LoginModule,
     ResetRequestModule,
     MulterModule.register({
