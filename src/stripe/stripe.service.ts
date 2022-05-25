@@ -10,7 +10,6 @@ export class StripeService {
   }
 
   // todo
-  // Kortin päivittäminen
   // Kun tilaus loppuu, poista stripeCustomer tai jotain
 
   async createCheckoutSession(

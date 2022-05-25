@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Public } from '../auth/public.decorator';
 import { UsersService } from '../users/users.service';
-import { Stripe } from 'stripe';
 @Controller('api/stripe')
 export class StripeController {
   constructor(
