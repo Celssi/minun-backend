@@ -76,7 +76,7 @@ export class StripeService {
   }
 
   async hasSubscription(user: User): Promise<boolean> {
-    if (!user.stripeCustomer) {
+    if (!user?.stripeCustomer) {
       return false;
     }
 

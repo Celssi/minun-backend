@@ -23,40 +23,13 @@ export class UsersService {
   ) {}
 
   async findById(userId: number): Promise<User> {
-    return this.usersRepository.findOne(
-      { id: userId },
-      {
-        relations: [
-          'socialMediaLinks',
-          'workHistories',
-          'educations',
-          'businessHours'
-        ]
-      }
-    );
-  }
-
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find({
-      relations: [
-        'socialMediaLinks',
-        'workHistories',
-        'educations',
-        'businessHours'
-      ]
+    const user = await this.usersRepository.findOne({
+      id: userId
     });
-  }
 
-  findAllPublic(): Promise<User[]> {
-    return this.usersRepository.find({
-      where: { public: true },
-      relations: [
-        'socialMediaLinks',
-        'workHistories',
-        'educations',
-        'businessHours'
-      ]
-    });
+    await this.fillRelatedFields(user);
+
+    return user;
   }
 
   async findWithEmailIncludeHashAndSalt(email: string): Promise<User> {
@@ -79,17 +52,13 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return this.usersRepository.findOne(
-      { email: email },
-      {
-        relations: [
-          'socialMediaLinks',
-          'workHistories',
-          'educations',
-          'businessHours'
-        ]
-      }
-    );
+    const user = await this.usersRepository.findOne({
+      email
+    });
+
+    await this.fillRelatedFields(user);
+
+    return user;
   }
 
   async findByRefreshToken(token: string) {
@@ -105,17 +74,33 @@ export class UsersService {
   }
 
   async findByHandle(handle: string) {
-    return this.usersRepository.findOne(
-      { handle: handle.toLowerCase() },
-      {
-        relations: [
-          'socialMediaLinks',
-          'workHistories',
-          'educations',
-          'businessHours'
-        ]
-      }
-    );
+    const user = await this.usersRepository.findOne({
+      handle: handle.toLowerCase()
+    });
+
+    await this.fillRelatedFields(user);
+
+    return user;
+  }
+
+  private async fillRelatedFields(user: User) {
+    user.socialMediaLinks = await this.socialMediaLinksRepository.find({
+      where: { userId: user.id }
+    });
+
+    user.educations = await this.educationsRepository.find({
+      where: { userId: user.id }
+    });
+
+    user.workHistories = await this.workHistoriesRepository.find({
+      where: { userId: user.id }
+    });
+
+    if (user.accountType === 'company') {
+      user.businessHours = await this.businessHoursRepository.find({
+        where: { userId: user.id }
+      });
+    }
   }
 
   async remove(id: number): Promise<void> {

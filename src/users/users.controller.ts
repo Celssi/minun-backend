@@ -41,12 +41,6 @@ export class UsersController {
     private stripeService: StripeService
   ) {}
 
-  @Public()
-  @Get()
-  async getAll(@Req() req): Promise<User[]> {
-    return this.usersService.findAllPublic();
-  }
-
   @Get('current')
   async getCurrent(@Req() req): Promise<User> {
     return this.usersService.findById(req.userFromDatabase.id);
