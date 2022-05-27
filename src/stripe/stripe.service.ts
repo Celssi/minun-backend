@@ -23,7 +23,6 @@ export class StripeService {
       cancel_url: process.env.FRONTEND_URL,
       mode: 'subscription',
       allow_promotion_codes: true,
-      subscription_data: { trial_period_days: 30 },
       automatic_tax: {
         enabled: false
       }
