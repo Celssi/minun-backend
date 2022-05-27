@@ -60,7 +60,6 @@ export class UsersService {
 
     if (user) {
       await this.fillRelatedFields(user);
-      user.hasPremium = await this.stripeService.hasSubscription(user);
     }
 
     return user;

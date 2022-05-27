@@ -43,7 +43,9 @@ export class UsersController {
 
   @Get('current')
   async getCurrent(@Req() req): Promise<User> {
-    return this.usersService.findById(req.userFromDatabase.id);
+    const user = await this.usersService.findById(req.userFromDatabase.id);
+    user.hasPremium = await this.stripeService.hasSubscription(user);
+    return user;
   }
 
   @Public()
