@@ -133,14 +133,14 @@ export class User {
   @AfterLoad()
   sortWorkHistories() {
     if (this?.workHistories?.length) {
-      this.workHistories.sort((a, b) => a.order - b.order);
+      this.workHistories.sort((a, b) => b.order - a.order);
     }
   }
 
   @AfterLoad()
   sortBusinessHours() {
     if (this?.businessHours?.length) {
-      this.businessHours.sort((a, b) => a.order - b.order);
+      this.businessHours.sort((a, b) => b.order - a.order);
     }
   }
 
@@ -151,6 +151,8 @@ export class User {
         ? this.companyName
         : this.firstName + ' ' + this.lastName;
   }
+
+  hasPremium: boolean;
 }
 
 export class UserDto {

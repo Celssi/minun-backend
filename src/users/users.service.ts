@@ -6,6 +6,7 @@ import { SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
 import { Education } from '../models/education.entity';
 import { BusinessHour } from '../models/business-hour.entity';
+import { StripeService } from '../stripe/stripe.service';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,8 @@ export class UsersService {
     @InjectRepository(Education)
     private educationsRepository: Repository<Education>,
     @InjectRepository(BusinessHour)
-    private businessHoursRepository: Repository<BusinessHour>
+    private businessHoursRepository: Repository<BusinessHour>,
+    private stripeService: StripeService
   ) {}
 
   async findById(userId: number): Promise<User> {
@@ -56,7 +58,9 @@ export class UsersService {
       email
     });
 
-    await this.fillRelatedFields(user);
+    if (user) {
+      await this.fillRelatedFields(user);
+    }
 
     return user;
   }
@@ -79,6 +83,7 @@ export class UsersService {
     });
 
     await this.fillRelatedFields(user);
+    user.hasPremium = await this.stripeService.hasSubscription(user);
 
     return user;
   }

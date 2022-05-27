@@ -55,9 +55,7 @@ export class UsersController {
   @Public()
   @Get('with-handle/:id')
   async getWithHandle(@Req() req, @Param() params): Promise<User> {
-    const user = await this.usersService.findByHandle(params.id);
-    const hasSubscription = await this.stripeService.hasSubscription(user);
-    return hasSubscription ? user : undefined;
+    return await this.usersService.findByHandle(params.id);
   }
 
   @Public()
@@ -247,6 +245,12 @@ export class UsersController {
   @Delete()
   async deleteUser(@Req() req, @Param() params): Promise<void> {
     if (req.userFromDatabase?.id) {
+      if (req.userFromDatabase.stripeCustomer) {
+        await this.stripeService.cancelSubscription(
+          req.userFromDatabase.stripeCustomer
+        );
+      }
+
       return await this.usersService.remove(req.userFromDatabase.id);
     }
 

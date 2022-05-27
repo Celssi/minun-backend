@@ -91,14 +91,8 @@ export class StripeController {
       return;
     }
 
-    const subscriptions = await this.stripeService.getSubscriptions(
+    await this.stripeService.cancelSubscription(
       req.userFromDatabase.stripeCustomer
     );
-
-    if (subscriptions.data.length > 0) {
-      const subscription = subscriptions.data[0];
-      subscription.cancel_at_period_end = true;
-      await this.stripeService.updateSubscription(subscription);
-    }
   }
 }

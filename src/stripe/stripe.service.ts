@@ -83,4 +83,14 @@ export class StripeService {
     const subscriptions = await this.getSubscriptions(user.stripeCustomer);
     return subscriptions.data.length > 0;
   }
+
+  async cancelSubscription(stripeCustomer: string): Promise<void> {
+    const subscriptions = await this.getSubscriptions(stripeCustomer);
+
+    if (subscriptions.data.length > 0) {
+      const subscription = subscriptions.data[0];
+      subscription.cancel_at_period_end = true;
+      await this.updateSubscription(subscription);
+    }
+  }
 }
