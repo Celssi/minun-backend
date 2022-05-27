@@ -124,27 +124,6 @@ export class User {
   resetRequests: ResetRequest[];
 
   @AfterLoad()
-  sortEducations() {
-    if (this?.educations?.length) {
-      this.educations.sort((a, b) => a.order - b.order);
-    }
-  }
-
-  @AfterLoad()
-  sortWorkHistories() {
-    if (this?.workHistories?.length) {
-      this.workHistories.sort((a, b) => b.order - a.order);
-    }
-  }
-
-  @AfterLoad()
-  sortBusinessHours() {
-    if (this?.businessHours?.length) {
-      this.businessHours.sort((a, b) => b.order - a.order);
-    }
-  }
-
-  @AfterLoad()
   setSearchValues() {
     this.searchValues =
       this.accountType === 'Company'

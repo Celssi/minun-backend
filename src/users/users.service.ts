@@ -58,9 +58,7 @@ export class UsersService {
       email
     });
 
-    if (user) {
-      await this.fillRelatedFields(user);
-    }
+    await this.fillRelatedFields(user);
 
     return user;
   }
@@ -89,6 +87,10 @@ export class UsersService {
   }
 
   private async fillRelatedFields(user: User) {
+    if (!user) {
+      return;
+    }
+
     user.socialMediaLinks = await this.socialMediaLinksRepository.find({
       where: { userId: user.id }
     });
@@ -97,14 +99,20 @@ export class UsersService {
       where: { userId: user.id }
     });
 
+    user.educations?.sort((a, b) => a.order - b.order);
+
     user.workHistories = await this.workHistoriesRepository.find({
       where: { userId: user.id }
     });
+
+    user?.workHistories.sort((a, b) => a.order - b.order);
 
     if (user.accountType === 'company') {
       user.businessHours = await this.businessHoursRepository.find({
         where: { userId: user.id }
       });
+
+      user.businessHours?.sort((a, b) => a.order - b.order);
     }
   }
 
