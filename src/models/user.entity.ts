@@ -118,18 +118,9 @@ export class User {
 
   @OneToMany(() => BusinessHour, (businessHour) => businessHour.user)
   businessHours: BusinessHour[];
-  searchValues: string;
 
   @OneToMany(() => ResetRequest, (resetRequest) => resetRequest.user)
   resetRequests: ResetRequest[];
-
-  @AfterLoad()
-  setSearchValues() {
-    this.searchValues =
-      this.accountType === 'Company'
-        ? this.companyName
-        : this.firstName + ' ' + this.lastName;
-  }
 
   hasPremium: boolean;
 }

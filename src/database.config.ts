@@ -11,7 +11,8 @@ const dbConfig: TypeOrmModuleOptions = {
   synchronize: false,
   migrations: [__dirname + '/migrations/*.ts'],
   cache: true,
-  logging: false
+  logging: false,
+  autoLoadEntities: true
 };
 
 export default dbConfig;

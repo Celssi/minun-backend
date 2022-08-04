@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/models/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SocialMediaLink } from '../models/social-media-link.entity';
 import { WorkHistory } from '../models/work-history.entity';
 import { Education } from '../models/education.entity';
@@ -21,12 +21,13 @@ export class UsersService {
     private educationsRepository: Repository<Education>,
     @InjectRepository(BusinessHour)
     private businessHoursRepository: Repository<BusinessHour>,
-    private stripeService: StripeService
+    private stripeService: StripeService,
+    private dataSource: DataSource
   ) {}
 
   async findById(userId: number): Promise<User> {
     const user = await this.usersRepository.findOne({
-      id: userId
+      where: { id: userId }
     });
 
     await this.fillRelatedFields(user);
@@ -55,7 +56,7 @@ export class UsersService {
 
   async findByEmail(email: string) {
     const user = await this.usersRepository.findOne({
-      email
+      where: { email }
     });
 
     await this.fillRelatedFields(user);
@@ -64,20 +65,20 @@ export class UsersService {
   }
 
   async findByRefreshToken(token: string) {
-    return this.usersRepository.findOne({ refreshToken: token });
+    return this.usersRepository.findOne({ where: { refreshToken: token } });
   }
 
   async findByFacebookToken(token: string) {
-    return this.usersRepository.findOne({ facebookToken: token });
+    return this.usersRepository.findOne({ where: { facebookToken: token } });
   }
 
   async findByGoogleToken(token: string) {
-    return this.usersRepository.findOne({ googleToken: token });
+    return this.usersRepository.findOne({ where: { googleToken: token } });
   }
 
   async findByHandle(handle: string) {
     const user = await this.usersRepository.findOne({
-      handle: handle.toLowerCase()
+      where: { handle: handle.toLowerCase() }
     });
 
     await this.fillRelatedFields(user);
@@ -157,13 +158,17 @@ export class UsersService {
   }
 
   findWithSearchPhrase(searchPhrase: string, offset: number) {
-    return this.usersRepository.find({
-      where: `(CONCAT(firstName, ' ', lastName) like '%${searchPhrase}%' 
-      or companyName like '%${searchPhrase}%' or email like '%${searchPhrase}%'
-      or handle like '%${searchPhrase}%' or specialSkills like '%${searchPhrase}%') and stripeCustomer is not null`,
-      relations: ['socialMediaLinks'],
-      take: 20,
-      skip: offset * 20
-    });
+    return this.dataSource
+      .createQueryBuilder(User, 'company')
+      .where(
+        "((user.companyName ILIKE :searchPhrase OR CONCAT(user.firstName, ', ', user.lastName) ILIKE :searchPhrase OR handle ILIKE :searchPhrase) AND stripeCustomer IS NOT NULL",
+        {
+          searchPhrase: `%${searchPhrase}%`
+        }
+      )
+      .leftJoinAndSelect('user.socialMediaLinks', 'socialMediaLinks')
+      .take(20)
+      .skip(offset * 20)
+      .getMany();
   }
 }
