@@ -159,9 +159,9 @@ export class UsersService {
 
   findWithSearchPhrase(searchPhrase: string, offset: number) {
     return this.dataSource
-      .createQueryBuilder(User, 'company')
+      .createQueryBuilder(User, 'user')
       .where(
-        "((user.companyName ILIKE :searchPhrase OR CONCAT(user.firstName, ', ', user.lastName) ILIKE :searchPhrase OR handle ILIKE :searchPhrase) AND stripeCustomer IS NOT NULL",
+        "(user.companyName LIKE :searchPhrase OR CONCAT(user.firstName, ', ', user.lastName) LIKE :searchPhrase OR handle LIKE :searchPhrase) AND stripeCustomer IS NOT NULL",
         {
           searchPhrase: `%${searchPhrase}%`
         }
