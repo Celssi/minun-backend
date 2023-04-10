@@ -1,0 +1,8 @@
+.idea
+node_modules/
+uploads/**
+**/.sass-cache/**
+*.scssc
+.env
+dist/
+tokyo-amphora-287616-391adbab0524.json

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  db:
+    platform: linux/x86_64
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'minun'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./minun.sql:/docker-entrypoint-initdb.d/init.sql
+      - my-db:/var/lib/mysql
+
+volumes:
+  my-db:
